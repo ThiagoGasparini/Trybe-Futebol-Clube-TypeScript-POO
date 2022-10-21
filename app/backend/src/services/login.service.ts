@@ -1,7 +1,8 @@
 import * as bcrypt from 'bcryptjs';
 import * as Jwt from 'jsonwebtoken';
 import User from '../database/models/user';
-import CustomError from '../errors/CustomError';
+import IToken from '../interfaces/IToken';
+import IUser from '../interfaces/IUser';
 
 class LoginService {
   model: User;
@@ -11,14 +12,26 @@ class LoginService {
   }
 
   public login = async (email: string, password: string): Promise<string> => {
-    const userData = await User.findOne({ where: { email } });
-    if (!userData) throw new CustomError(401, 'Incorrect email or password');
+    const user = await User.findOne({ where: { email }, raw: true });
+    if (!user) {
+      return 'User not found';
+    }
 
-    const validatePassword = bcrypt.compareSync(password, userData.password);
-    if (!validatePassword) throw new CustomError(401, 'Incorrect email or password');
+    if (!bcrypt.compareSync(password, user.password)) {
+      return 'Incorrect password';
+    }
 
-    const token = Jwt.sign({ id: userData.id }, 'jwt_secret', { expiresIn: '7d' });
+    const token = Jwt.sign({ id: user.id }, 'jwt_secret', { expiresIn: '7d' });
+
     return token;
+  };
+
+  public validateTokenLogin = async (token: string): Promise<string> => {
+    const decodedToken = Jwt.verify(token, 'jwt_secret') as IToken;
+
+    const userData = await User.findOne({ where: { id: decodedToken.id } }) as unknown as IUser;
+
+    return userData.role;
   };
 }
 export default LoginService;

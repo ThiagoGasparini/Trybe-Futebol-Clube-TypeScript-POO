@@ -1,3 +1,3 @@
-import loginRoute from './login.route';
+import loginRoute from './routerLogin';
 
 export default { loginRoute };
