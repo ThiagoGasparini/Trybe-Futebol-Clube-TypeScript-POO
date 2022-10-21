@@ -13,6 +13,7 @@ class LoginController {
     return res.status(200).json({ token });
   };
 
+  // teste
   // https://stackoverflow.com/questions/43915379/i-need-to-replace-bearer-from-the-header-to-verify-the-token
   public validateTokenLogin = async (req: Request, res: Response) => {
     const { authorization } = req.headers;
