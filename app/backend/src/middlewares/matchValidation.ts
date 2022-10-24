@@ -15,6 +15,8 @@ const validateMatches = (req: Request, res: Response, next: NextFunction) => {
       });
   }
 
+  if (!authorization) return res.status(401).json({ message: 'Token must be a valid token' });
+
   try {
     if (!authorization) return res.status(401).json({ message: 'Invalid Token!' });
     const token = authorization.replace('Bearer ', ''); // https://stackoverflow.com/questions/43915379/i-need-to-replace-bearer-from-the-header-to-verify-the-token
