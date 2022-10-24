@@ -9,7 +9,7 @@ const validateMatches = (req: Request, res: Response, next: NextFunction) => {
 
   if (homeTeam === awayTeam) {
     return res
-      .status(401)
+      .status(422)
       .json({
         message: 'It is not possible to create a match with two equal teams',
       });
