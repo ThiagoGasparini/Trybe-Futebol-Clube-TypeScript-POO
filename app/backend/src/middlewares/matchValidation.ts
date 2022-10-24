@@ -18,8 +18,6 @@ const validateMatches = (req: Request, res: Response, next: NextFunction) => {
   }
 
   try {
-    // const token = authorization.replace('Bearer ', ''); // https://stackoverflow.com/questions/43915379/i-need-to-replace-bearer-from-the-header-to-verify-the-token
-
     Jwt.verify(authorization, 'jwt_secret') as IToken;
   } catch (error) {
     return res.status(401).json({ message: 'Token must be a valid token' });
