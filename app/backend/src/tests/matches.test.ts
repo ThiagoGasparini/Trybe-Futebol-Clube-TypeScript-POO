@@ -349,17 +349,24 @@ const token = Jwt.sign({ userId: 1 }, 'jwt_secret', {
   expiresIn: '1d',
 });
 
+const newMatch = {
+  "homeTeam": 16, 
+  "awayTeam": 8, 
+  "homeTeamGoals": 2,
+  "awayTeamGoals": 2
+}
+
 chai.use(chaiHttp);
 
 const { expect } = chai;
 
 describe('Testando a rota Matches', () => {
   describe('get /matches', () => {
-    before(() => {
+    beforeEach(() => {
       sinon.stub(Match, 'findAll').resolves(MatchesMock as unknown as Match[]);
     })
 
-    after(() => {
+    afterEach(() => {
       (Match.findAll as sinon.SinonStub).restore();
     })
     it('Retornando a lista de Partidas com o status 200', async () => {
@@ -367,6 +374,65 @@ describe('Testando a rota Matches', () => {
       expect(response.body).to.be.an('array');
       expect(response.status).to.be.equal(200);
       expect(response.body).to.be.deep.equal(MatchesMock);
+    })
+  })
+
+  describe('rota PATCH /matches/:id', () => {
+    beforeEach(() => {
+      sinon.stub(Match, 'findOne').resolves(MatchesMock[0] as unknown as Match);
+    })
+
+    afterEach(() => {
+      (Match.findOne as sinon.SinonStub).restore();
+    })
+    it('Retornando uma Partida com o status 200', async () => {
+      const response = await chai.request(app)
+      .patch('/matches/1').set('content-type', 'application/json')
+      .send({ "home_score": 2, "away_score": 1 });
+      expect(response.status).to.be.equal(200);
+      expect(response.body).to.be.an('array');
+    })
+  })
+  describe('Utilizando a query ?inProgress=true', () => {
+    beforeEach(() => {
+      sinon.stub(Match, 'findAll').resolves(MatchesMock as unknown as Match[]);
+    })
+
+    afterEach(() => {
+      (Match.findAll as sinon.SinonStub).restore();
+    })
+    it('Retornando a lista de Partidas em andamento com o status 200', async () => {
+      const response = await chai.request(app).get('/matches?inProgress=true');
+      expect(response.body).to.be.an('array');
+      expect(response.status).to.be.equal(200);
+    })
+    it('Retornando a lista de Partidas Finalizadas com o status 200', async () => {
+      const response = await chai.request(app).get('/matches?inProgress=false');
+      expect(response.body).to.be.an('array');
+      expect(response.status).to.be.equal(200);
+    })
+    it('Alterando o status de uma partida em andamento para finalizada', async () => {
+      const response = await chai.request(app)
+      .patch('/matches/1/finish')
+      expect(response.body).to.be.an('object');
+      expect(response.status).to.be.equal(200);
+    })
+  })
+  describe('rota POST /matches', () => {
+    beforeEach(() => {
+      sinon.stub(Match, 'create').resolves(MatchesMock as unknown as Match);
+    })
+
+    afterEach(() => {
+      (Match.create as sinon.SinonStub).restore();
+    })
+    it('Criando uma Partida com o status 201', async () => {
+      const response = await chai.request(app)
+      .post('/matches')
+      .set('authorization', token)
+      .send(newMatch);
+      expect(response.body).to.be.an('object');
+      expect(response.status).to.be.equal(201);
     })
   })
 })
