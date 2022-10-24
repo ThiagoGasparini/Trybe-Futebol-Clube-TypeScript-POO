@@ -28,6 +28,29 @@ class MatchesController {
 
     return res.status(200).json(filteredMatches);
   };
+
+  public createMatch = async (req: Request, res: Response) => {
+    const match = req.body;
+
+    const matchCreated = await this.matchesServices.createMatch(match);
+
+    return res.status(201).json(matchCreated);
+  };
+
+  public finishMatch = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    await this.matchesServices.finishMatch(id);
+
+    return res.status(200).json({ message: 'Finished' });
+  };
+
+  public updateMatch = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const { homeTeamGoals, awayTeamGoals } = req.body;
+
+    const matchUpdated = await this.matchesServices.updateMatch(id, homeTeamGoals, awayTeamGoals);
+    return res.status(200).json(matchUpdated);
+  };
 }
 
 export default MatchesController;
