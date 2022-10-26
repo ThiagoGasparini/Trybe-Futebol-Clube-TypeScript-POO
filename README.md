@@ -1,8 +1,5 @@
 # Boas vindas ao repositório do Trybe Futebol Clube!
 
-<summary><strong>👨‍💻 O que deverá ser desenvolvido</strong></summary><br />
-
-
   O `TFC` é um site informativo sobre partidas e classificações de futebol! ⚽️
 
   Foi desenvolvido uma API e também integrar *- através do docker-compose -* as aplicações para que elas funcionem consumindo um banco de dados.
